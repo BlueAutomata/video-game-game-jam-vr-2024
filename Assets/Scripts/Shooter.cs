@@ -181,7 +181,7 @@ public class Shooter : MonoBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(trajectoryDirection);
 
         // Apply a 90-degree rotation to the target rotation
-        Quaternion rotatedRotation = targetRotation * Quaternion.Euler(90, 0, 0);  // Add 90-degree yaw (rotation around Y-axis)
+        Quaternion rotatedRotation = targetRotation * Quaternion.Euler(0, 0, 0);  // Add 90-degree yaw (rotation around Y-axis)
 
         // Set the rotation of the shooter to smoothly align with the trajectory direction
         transform.rotation = Quaternion.Slerp(transform.rotation, rotatedRotation, Time.deltaTime * 5f); // Smooth rotation
