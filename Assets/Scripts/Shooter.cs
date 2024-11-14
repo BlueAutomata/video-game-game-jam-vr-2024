@@ -13,7 +13,7 @@ public class Shooter : MonoBehaviour
     public float launchInterval = 1f;           // Interval between each projectile launch
     public float projectileHeightOffset = 0f;   // Height above the shooter to spawn projectiles
     public float lineWidth = 0.05f;             // Width of the trajectory line
-    public float acceleration = 2f;             // Acceleration applied to each projectile over time
+    public float acceleration = 5f;             // Acceleration applied to each projectile over time
     public float startTime = 2f;                // Time (in seconds) to wait before starting shooting
 
     private LineRenderer lineRenderer;
