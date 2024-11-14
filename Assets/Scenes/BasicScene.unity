@@ -535,6 +535,11 @@ MonoBehaviour:
   m_Teleporting:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &1279166557 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+  m_PrefabInstance: {fileID: 441087506}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1743788631
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -592,11 +597,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 50da3afd03256034a9bc5a5464f7ee5e, type: 3}
---- !u!1 &1743788632 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4791403554275783498, guid: 50da3afd03256034a9bc5a5464f7ee5e, type: 3}
-  m_PrefabInstance: {fileID: 1743788631}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2021315854
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -610,9 +610,21 @@ PrefabInstance:
       value: ShooterManager
       objectReference: {fileID: 0}
     - target: {fileID: 7063283361309421249, guid: 22f830d7ac663464e94d7486439a7bd4, type: 3}
+      propertyPath: launchForce
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 7063283361309421249, guid: 22f830d7ac663464e94d7486439a7bd4, type: 3}
+      propertyPath: spawnRadius
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7063283361309421249, guid: 22f830d7ac663464e94d7486439a7bd4, type: 3}
+      propertyPath: acceleration
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7063283361309421249, guid: 22f830d7ac663464e94d7486439a7bd4, type: 3}
       propertyPath: targetPrefab
       value: 
-      objectReference: {fileID: 1743788632}
+      objectReference: {fileID: 1279166557}
     - target: {fileID: 7063283361309421249, guid: 22f830d7ac663464e94d7486439a7bd4, type: 3}
       propertyPath: shooterPrefabs.Array.size
       value: 1

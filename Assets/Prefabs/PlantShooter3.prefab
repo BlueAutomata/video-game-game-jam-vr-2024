@@ -9,6 +9,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: bbde480d07a8bf247be6d308e1ff526e, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: bbde480d07a8bf247be6d308e1ff526e, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: bbde480d07a8bf247be6d308e1ff526e, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 113.8521
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: bbde480d07a8bf247be6d308e1ff526e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0
       objectReference: {fileID: 0}
@@ -189,7 +201,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectilePrefabs:
-  - {fileID: 9146870817224568488, guid: 6f2399f331752304da113ecf2103f58b, type: 3}
+  - {fileID: 4180889398894453414, guid: dc49f262dab188d4f8e4040dabcfc6f1, type: 3}
   target: {fileID: 0}
   launchForce: 15
   spreadAngle: 10

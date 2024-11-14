@@ -5,99 +5,128 @@ using UnityEngine;
 public class ShooterManager : MonoBehaviour
 {
     public List<GameObject> shooterPrefabs;   // List of shooter prefabs to spawn
-    public GameObject targetPrefab;            // The target prefab to assign to each shooter
-    public int shootersPerLevel = 3;           // Number of shooters to spawn each level
-    public int currentLevel = 1;               // Current level of the game (1, 2, or 3)
-    public float levelUpInterval = 30f;        // Interval to automatically progress levels
+    public GameObject targetPrefab;           // The target prefab to assign to each shooter
+    public int initialShooters = 1;           // Starting number of shooters
+    public int maxShooters = 5;               // Maximum number of shooters
+    public float spawnInterval = 2f;          // Interval for adding or removing shooters
+    public float minShootRate = 0.5f;         // Minimum shoot rate (interval between shots)
+    public float maxShootRate = 2f;           // Maximum shoot rate (interval between shots)
+    public float shooterMinLifetime = 60f;    // Minimum lifetime for each shooter (1 minute)
 
-    [Header("Level Settings")]
-    public float[] launchForceRange = { 10f, 20f, 30f };  // Launch forces range for each level
-    public float[] spreadAngleRange = { 5f, 15f, 25f };   // Spread angle range for each level
-    public float[] launchIntervalRange = { 0.5f, 1f, 1.5f }; // Launch interval range for each level
-    public float[] accelerationRange = { 3f, 6f, 10f };  // Acceleration range for each level
-    public float[] startTimeRange = { 1f, 2f, 3f };      // Start time range for each level
-    public float[] projectileHeightOffsetRange = { 0f, 1f, 2f }; // Height offset range for each level
-    public float[] radiusRange = { 3f, 4f, 5f };    // Radius range for shooter spawn distances
+    [Header("Shooter Settings")]
+    public float launchForce = 15f;           // Base launch force
+    public float spreadAngle = 10f;           // Base spread angle
+    public float acceleration = 100f;         // Base acceleration
+    public float projectileHeightOffset = 1f; // Height offset for projectiles
+    public float spawnRadius = 20f;           // Radius for shooter spawn positions
 
     private List<GameObject> activeShooters = new List<GameObject>();  // List to track active shooters
+    private Dictionary<GameObject, float> shooterTimers = new Dictionary<GameObject, float>(); // Track shooter lifetimes
+    private int currentShooterCount;           // Current number of shooters
 
     private void Start()
     {
-        // Start the coroutine to handle automatic level progression
-        StartCoroutine(LevelUpCoroutine());
+        // Set the initial shooter count and start the random appearance coroutine
+        currentShooterCount = initialShooters;
+        StartCoroutine(RandomShooterCoroutine());
     }
 
     private void ApplyShooterSettings(Shooter shooter)
     {
-        // Randomly apply the shooter settings based on the current level's range
-        shooter.launchForce = Random.Range(launchForceRange[currentLevel - 1] - 5f, launchForceRange[currentLevel - 1] + 5f);
-        shooter.spreadAngle = Random.Range(spreadAngleRange[currentLevel - 1] - 5f, spreadAngleRange[currentLevel - 1] + 5f);
-        shooter.launchInterval = Random.Range(launchIntervalRange[currentLevel - 1] - 0.2f, launchIntervalRange[currentLevel - 1] + 0.2f);
-        shooter.acceleration = Random.Range(accelerationRange[currentLevel - 1] - 2f, accelerationRange[currentLevel - 1] + 2f);
-        shooter.startTime = Random.Range(startTimeRange[currentLevel - 1] - 0.5f, startTimeRange[currentLevel - 1] + 0.5f);
-        shooter.projectileHeightOffset = Random.Range(projectileHeightOffsetRange[currentLevel - 1] - 0.5f, projectileHeightOffsetRange[currentLevel - 1] + 0.5f);
+        // Apply random shooter settings, including a unique shooting rate for each shooter
+        shooter.launchForce = launchForce;
+        shooter.spreadAngle = spreadAngle;
+        shooter.acceleration = acceleration;
+        shooter.projectileHeightOffset = projectileHeightOffset;
+
+        // Assign a random shooting rate within the specified range
+        shooter.launchInterval = Random.Range(minShootRate, maxShootRate);
     }
 
-    private void SpawnShooters()
+    //private List<float> availableAngles = new List<float> { 0f, 72f, 144f, 216f, 288f }; // List of angles available for spawning shooters
+
+    private List<float> availableAngles = new List<float> { 0f, 72f, 144f, 216f, 288f }; // List of angles available for spawning shooters
+
+    private void SpawnShooter()
     {
-        // Calculate the spawn radius for this level
-        float spawnRadius = 20; //radiusRange[currentLevel - 1];
-
-        // Spawn shooters in a circle around the target
-        for (int i = 0; i < shootersPerLevel; i++)
+        // Check if there are any available angles left
+        if (availableAngles.Count == 0)
         {
-            // Calculate a random position within the radius
-            float angle = Random.Range(0f, 360f);
-            float distance = spawnRadius; // Random.Range(0f, spawnRadius);
+            Debug.LogWarning("No available angles to spawn shooters.");
+            return; // No available angles, exit the function
+        }
 
-            Vector3 spawnPosition = targetPrefab.transform.position + new Vector3(Mathf.Cos(angle) * distance, 0, Mathf.Sin(angle) * distance);
+        // Randomly select an angle from the available angles list
+        float angle = availableAngles[Random.Range(0, availableAngles.Count)];
 
-            // Set the Y position to the target's Y position to ensure they spawn at the correct height
-            spawnPosition.y = 1; //targetPrefab.transform.position.y;
+        // Remove the selected angle from the list to prevent reuse
+        availableAngles.Remove(angle);
 
-            // Instantiate the shooter prefab at the calculated position
-            GameObject shooterObject = Instantiate(shooterPrefabs[Random.Range(0, shooterPrefabs.Count)], spawnPosition, Quaternion.identity);
+        float distance = spawnRadius;
 
-            // Assign the target prefab to the shooter
-            Shooter shooter = shooterObject.GetComponent<Shooter>();
-            if (shooter != null)
-            {
-                shooter.target = targetPrefab.transform; // Assign the target prefab
-                ApplyShooterSettings(shooter);
-            }
+        // Calculate the spawn position using the angle and distance, set y to 0 (floor level)
+        Vector3 spawnPosition = targetPrefab.transform.position + new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * distance, 0f, Mathf.Sin(angle * Mathf.Deg2Rad) * distance);
 
-            // Add the shooter to the list of active shooters
-            activeShooters.Add(shooterObject);
+        // Instantiate a random shooter prefab at the calculated position
+        GameObject shooterObject = Instantiate(shooterPrefabs[Random.Range(0, shooterPrefabs.Count)], spawnPosition, Quaternion.identity);
+
+        // Assign the target prefab to the shooter
+        Shooter shooter = shooterObject.GetComponent<Shooter>();
+        if (shooter != null)
+        {
+            shooter.target = targetPrefab.transform; // Assign the target prefab
+            ApplyShooterSettings(shooter);
+        }
+
+        // Add the shooter to the list of active shooters and set its timer
+        activeShooters.Add(shooterObject);
+        shooterTimers[shooterObject] = 0f; // Initialize its lifetime timer
+        currentShooterCount++;
+    }
+
+
+
+
+    private void RemoveRandomShooter()
+    {
+        // Filter shooters that have been active for at least the minimum lifetime
+        List<GameObject> removableShooters = activeShooters.FindAll(s => shooterTimers[s] >= shooterMinLifetime);
+
+        if (removableShooters.Count > 0)
+        {
+            // Choose a random shooter from those that met the minimum lifetime
+            GameObject shooterToRemove = removableShooters[Random.Range(0, removableShooters.Count)];
+            activeShooters.Remove(shooterToRemove);
+            shooterTimers.Remove(shooterToRemove);
+
+            // Destroy the shooter game object
+            Destroy(shooterToRemove);
+            currentShooterCount--;
         }
     }
 
-    private void DestroyPreviousShooters()
+    private IEnumerator RandomShooterCoroutine()
     {
-        // Destroy all shooters from the previous level
-        foreach (GameObject shooter in activeShooters)
-        {
-            Destroy(shooter);
-        }
-
-        // Clear the list of active shooters for the new level
-        activeShooters.Clear();
-    }
-
-    private IEnumerator LevelUpCoroutine()
-    {
-        // Wait for the specified interval before progressing to the next level
         while (true)
         {
-            yield return new WaitForSeconds(levelUpInterval);
+            // Wait for the specified interval before adding/removing shooters
+            yield return new WaitForSeconds(spawnInterval);
 
-            // Destroy shooters from the previous level
-            DestroyPreviousShooters();
+            // Update lifetime timers for each active shooter
+            foreach (var shooter in new List<GameObject>(activeShooters))
+            {
+                shooterTimers[shooter] += spawnInterval;
+            }
 
-            // Increase level (loop back to level 1 after level 3)
-            currentLevel = (currentLevel % 3) + 1;
-
-            // Spawn shooters for the new level with randomized settings
-            SpawnShooters();
+            // Randomly decide whether to add or remove a shooter, within limits
+            if (currentShooterCount < maxShooters && (currentShooterCount <= initialShooters || Random.value > 0.5f))
+            {
+                SpawnShooter(); // Add a shooter
+            }
+            else if (currentShooterCount > initialShooters)
+            {
+                RemoveRandomShooter(); // Remove a shooter
+            }
         }
     }
 }
