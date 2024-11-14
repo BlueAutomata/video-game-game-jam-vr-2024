@@ -188,7 +188,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9c47b4e94b3c784f9ba5b4da78a4037, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectilePrefabs: []
+  projectilePrefabs:
+  - {fileID: 9146870817224568488, guid: 6f2399f331752304da113ecf2103f58b, type: 3}
   target: {fileID: 0}
   launchForce: 15
   spreadAngle: 10
