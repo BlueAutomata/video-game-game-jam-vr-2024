@@ -65,7 +65,7 @@ public class ShooterManager : MonoBehaviour
         float distance = spawnRadius;
 
         // Calculate the spawn position using the angle and distance, set y to 0 (floor level)
-        Vector3 spawnPosition = targetPrefab.transform.position + new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * distance, 0f, Mathf.Sin(angle * Mathf.Deg2Rad) * distance);
+        Vector3 spawnPosition = targetPrefab.transform.position + new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * distance, -targetPrefab.transform.position.y + 0.4f, Mathf.Sin(angle * Mathf.Deg2Rad) * distance);
 
         // Instantiate a random shooter prefab at the calculated position
         GameObject shooterObject = Instantiate(shooterPrefabs[Random.Range(0, shooterPrefabs.Count)], spawnPosition, Quaternion.identity);
